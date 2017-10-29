@@ -30,6 +30,18 @@ define Package/$(PKG_NAME)/description
 the LCD screen on PHICOMM K3 to display some stats.
 endef
 
+define Package/$(PKG_NAME)/postinst
+#!/bin/sh
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	if [ -f /etc/uci-defaults/k3screenctrl ]; then
+		( . /etc/uci-defaults/k3screenctrl ) && \
+		rm -f /etc/uci-defaults/k3screenctrl
+	fi
+	rm -rf /tmp/luci-indexcache /tmp/luci-modulecache
+fi
+exit 0
+endef
+
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/lib/k3screenctrl
