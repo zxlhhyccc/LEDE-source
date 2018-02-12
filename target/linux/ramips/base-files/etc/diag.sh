@@ -39,6 +39,7 @@ get_status_led() {
 	pwh2004|\
 	r6220|\
 	tplink,c20-v4|\
+	tplink,c50-v3|\
 	tplink,tl-mr3420-v5|\
 	tl-wr840n-v4|\
 	tl-wr840n-v5|\
@@ -315,8 +316,8 @@ get_status_led() {
 	zbt-we826-32M)
 		status_led="zbt-we826:green:power"
 		;;
-	zbt-we1226)
-		status_led="zbt-we1226:green:wlan"
+	zbtlink,zbt-we1226)
+		status_led="$boardname:green:wlan"
 		;;
 	zbt-wg3526-16M|\
 	zbt-wg3526-32M)
