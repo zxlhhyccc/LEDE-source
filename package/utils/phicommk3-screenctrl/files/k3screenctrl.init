@@ -3,40 +3,40 @@
 START=99
 STOP=99
 
+NAME=k3screenctrl
+
 SCRIPTS_BASE=/lib/k3screenctrl/
 TEMP_DIR=/tmp/k3screenctrl
+DEVICE_CUSTOM_FILE=$TEMP_DIR/device_custom
 
 device_custom() {
-    local file=$TEMP_DIR/device_custom
-    local x=$(uci show k3screenctrl | grep -c =device_custom)
-    for i in $(seq 1 $x)
-    do
-        uci_get="uci -q get k3screenctrl.@device_custom[$(($i - 1))]"
-        mac=$($uci_get.mac)
-        name=$($uci_get.name)
-        icon=$($uci_get.icon)
-        [ -z "$name" ] && name="?"
-        [ $icon -eq 0 ] && icon=""
-        echo "$mac $name $icon" >> $file
-    done
-    echo $x >> $file
+    config_get mac $1 mac
+    config_get name $1 name
+    config_get icon $1 icon
+    [ -z "$name" ] && name="?"
+    [ $icon -eq 0 ] && icon=""
+    echo "$mac $name $icon" >> $DEVICE_CUSTOM_FILE
 }
 
 start() {
+    [ -z "$(grep "/lib/k3screenctrl/oui/update_oui.sh" /etc/crontabs/root)" ] && echo "0 6 * * * /lib/k3screenctrl/oui/update_oui.sh" >> /etc/crontabs/root
     mkdir -p $TEMP_DIR/device_speed
+    touch $DEVICE_CUSTOM_FILE
     nvram get et0macaddr > $TEMP_DIR/macaddr
+    config_load $NAME
+    config_get m general screen_time
+    config_get d general refresh_time
+    config_foreach device_custom device_custom
+    echo "$(wc -l $DEVICE_CUSTOM_FILE | awk '{print $1}')" >> $DEVICE_CUSTOM_FILE
     [ -z "$(iptables --list | grep K3_SEREEN_U)" ] && iptables -N K3_SEREEN_U
     [ -z "$(iptables --list | grep K3_SEREEN_D)" ] && iptables -N K3_SEREEN_D
-    device_custom
     $SCRIPTS_BASE"device_online.sh" &
-    m=$(uci get k3screenctrl.@general[0].screen_time) && [ $m -lt 10 ] && m=10
-    d=$(uci get k3screenctrl.@general[0].refresh_time) && [ $d -lt 2 ] && d=2
     /usr/bin/k3screenctrl -m $m -d $d >/var/log/k3screenctrl.log 2>&1 &
-    [ -z "$(grep "/lib/k3screenctrl/oui/update_oui.sh" /etc/crontabs/root)" ] && echo "0 6 * * * /lib/k3screenctrl/oui/update_oui.sh" >> /etc/crontabs/root
+    
 }
 
 stop() {
-    killall k3screenctrl device_online.sh
-    kill -9 $(pidof device_online.sh) >/dev/null 2>&1
+    killall k3screenctrl
+    kill -9 $(cat /var/run/device_online.sh.pid) >/dev/null 2>&1
     rm -rf $TEMP_DIR
 }
