@@ -54,6 +54,7 @@ platform_check_image() {
 	dir-810l|\
 	duzun-dm06|\
 	e1700|\
+	elecom,wrc-1167ghbk2-s|\
 	esr-9753|\
 	ew1200|\
 	ex2700|\
@@ -75,6 +76,7 @@ platform_check_image() {
 	hpm|\
 	ht-tm02|\
 	hw550-3g|\
+	iodata,wn-gx300gr|\
 	ip2202|\
 	jhr-n805r|\
 	jhr-n825r|\
@@ -254,6 +256,7 @@ platform_check_image() {
 	tplink,c20-v4|\
 	tplink,c50-v3|\
 	tplink,tl-mr3420-v5|\
+	tplink,tl-wr842n-v5|\
 	tplink,tl-wr902ac-v3|\
 	tl-wr840n-v4|\
 	tl-wr840n-v5|\
